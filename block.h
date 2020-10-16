@@ -7,5 +7,5 @@ class Block {
         bool is_dirty;
     public:
         Block(int size, int tag);
-        }
-}
+
+};
