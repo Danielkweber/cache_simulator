@@ -3,9 +3,8 @@
 using std::map;
 
 class Block {
-    private:
-        bool is_dirty;
     public:
-        Block(int size, int tag);
+        bool is_dirty;
+        Block() { this->is_dirty = false; }
 
 };
