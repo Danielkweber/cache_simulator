@@ -2,7 +2,7 @@
 #include <math.h>
 #include <cstring>
 #include <sstream>
-#include "cache.h"
+//#include "cache.h"
 
 using std::cin; using std::cout;
 using std::endl; using std::stringstream;
@@ -15,11 +15,16 @@ using std::endl; using std::stringstream;
  *  Output: true if the number is pos, non-0 pos of 2, false otherwise
  **/
 int is_pos_pow2(int param) {
+  //checks if 0, if so return false
+  if (param == 0) {
+    return 0;
+  }
+
   //checks pos and non-0
   int pos = (param > 0);
   //check if square by if sqrt is whole num
-  long sr = sqrt(param);
-  int pow = (sr - floor(sr)) == 0;
+  long ceiling = ceil(log2(param));
+  int pow = (ceiling - floor(log2(param)) == 0);
 
   //only returns 1 if positive and pow of 2
   return pow && pos;
