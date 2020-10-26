@@ -1,16 +1,19 @@
 #include <map>
 #include <utility>
 #include <string>
+#include <sstream>
 #include "set.h"
 
 using std::map; using std::pair;
-using std::string;
+using std::string; using std::endl;
+using std::stringstream;
 
 class Cache {
     private:
 
        // Structure to keep track of all the stats to be returned
-       struct Statistics {
+       class Statistics {
+            public:
                 int cycles = 0;
                 int total_loads = 0;
                 int total_stores = 0;
@@ -18,6 +21,17 @@ class Cache {
                 int store_misses = 0;
                 int load_hits = 0;
                 int load_misses = 0;
+                string to_string() {
+                    stringstream statstream;
+                    statstream << "Total loads: " << total_loads << endl;
+                    statstream << "Total storess: " << total_stores << endl;
+                    statstream << "Load hits: " << load_hits << endl;
+                    statstream << "Load misses: " << load_misses << endl;
+                    statstream << "Store hits: " << store_hits << endl;
+                    statstream << "Store misses: " << store_misses << endl;
+                    statstream << "Total cycles: " << cycles << endl;
+                    return statstream.str();
+                }
         };
         // Keeps track of one set of stats per instance
         Statistics* stats;
@@ -55,5 +69,6 @@ class Cache {
         void load_cache(int tag, int index);
         // write cache for given tag and count stats
         void write_cache(int tag, int index);
+        Statistics* get_stats() { return this->stats; }
 
 };

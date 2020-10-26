@@ -2,10 +2,12 @@
 #include <math.h>
 #include <cstring>
 #include <sstream>
-//#include "cache.h"
+#include <string>
+#include "cache.h"
 
 using std::cin; using std::cout;
 using std::endl; using std::stringstream;
+using std::stoul; using std::getline;
 
 
 /**
@@ -91,8 +93,7 @@ int valid_instruct_args(int argc, char *argv[]) {
 
   //checks if no-write-allocate and write-back are combined
   //which wouldn't make sense
-  if (strcmp(argv[4], "no-write-allocate") != 0 && strcmp(argv[5], "write-back")\
- != 0) {
+  if (strcmp(argv[4], "no-write-allocate") == 0 && strcmp(argv[5], "write-back") == 0) {
     cout << "Error: no-write-allocate and write-back passed together which is invalid" << endl;
     return 1;
   }
@@ -121,12 +122,30 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  //Make cache 
-  //Cache cache(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), argv[4], argv[5], argv[6]);
 
-  //run simulation
-  //cach.run(); ?
-  //cache/print();
+  Cache* cache = new Cache(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), argv[4], argv[5], argv[6]);
+  string op_type;
+  string trace_str;
+  string trash;
+  unsigned long trace;
+  pair<int, int>* tag_index;
+  cout << "hello";
+  while (cin) {
+    cin >> op_type;
+    cin >> trace_str;
+    cout << op_type;
+    cout << trace_str;
+    trace_str = trace_str.substr(2);
+    trace = stoul(trace_str, 0, 16);
+    tag_index = cache->process_address(trace);
+    if (op_type.compare("l") == 0) {
+      cache->read_cache(tag_index->first, tag_index->second);
+    } else if (op_type.compare("s") == 0) {
+      cache->write_cache(tag_index->first, tag_index->second);
+    }
+  }
+  
+  cout << cache->get_stats()->to_string();
 
   return 0;
   
