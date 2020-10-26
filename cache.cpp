@@ -42,16 +42,16 @@ bool Cache::is_hit(int tag, int index) {
 }
 
 bool Cache::read_cache(int tag, int index) {
-    stats->total_loads += 1;
+    stats->total_loads++;
     if (this->is_hit(tag, index)) {
         if (evict_policy == 1) { //If evict_policy is lru
             this->sets->at(index)->update_evict_order(tag);
         }
-        stats->load_hits += 1;
-        stats->cycles += 1;
+        stats->load_hits++;
+        stats->cycles++;
         return true;
     } else {
-        stats->load_misses += 1;
+        stats->load_misses++;
         this->load_cache(tag, index);
     }
 }
@@ -64,10 +64,19 @@ void Cache::load_cache(int tag, int index) {
 }
 
 void Cache::write_cache(int tag, int index) {
-    if (this->write_alloc) {
-
+    stats->total_stores++;
+    if (this->is_hit(tag, index)) {
+        stats->store_hits++;
+        stats->cycles++;
+    } else {
+        stats->store_misses++;
+        if (write_alloc) {
+            load_cache(tag, index);
+        }
     }
     if (this->write_through) {
-        
+        stats->cycles += 25*block_size;
+    } else {
+        this->sets->at(index)->get_blocks()->at(tag)->is_dirty = true;
     }
 }
