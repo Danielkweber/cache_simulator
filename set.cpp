@@ -46,22 +46,22 @@ int Set::add_block(uint32_t tag) {
         // gets number of kickedout blocks 
         int write_back = kickout();
 	// adds new block
-	blocks->insert(pair<uint32_t, Block*>(tag, new Block));
-	// update evict order
-	evict_order->push_front(tag);
-	// updates number of blocks
-	this->num_blocks++;
+        blocks->insert(pair<uint32_t, Block*>(tag, new Block));
+        // update evict order
+        evict_order->push_front(tag);
+        // updates number of blocks
+        this->num_blocks++;
 
 	// additional blocks
         return 1 + write_back;
     } else {
         // add new block
         blocks->insert(pair<uint32_t, Block*>(tag, new Block));
-	// update evict order
-	evict_order->push_front(tag);
-	// update num blocks
-	this->num_blocks++;
-	// return 1 block added
+        // update evict order
+        evict_order->push_front(tag);
+        // update num blocks
+        this->num_blocks++;
+        // return 1 block added
         return 1;
 
     }
@@ -95,8 +95,8 @@ int Set::kickout() {
         Block* kick_block = blocks->at(to_kick);
 	//check if dirty
         if (kick_block->is_dirty) {
-	    // do extra write if dirty
-	    writes_perfomed += 1;
+            // do extra write if dirty
+            writes_perfomed++;
         }
     }
     // kick block to be evicted

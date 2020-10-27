@@ -105,18 +105,13 @@ void Cache::read_cache(uint32_t tag, uint32_t index) {
  */
 void Cache::load_cache(uint32_t tag, uint32_t index) {
     // check address not already in cache
-    if (sets->find(index) != sets->end()) {
-        // access memory
-        int mem_accesses = sets->at(index)->add_block(tag);
-	// update cycle stat
-        stats->cycles += this->block_size*25*mem_accesses;
-    } else {
+    if (sets->find(index) == sets->end()) {
         sets->insert(pair<uint32_t, Set*>(index, new Set(this->set_size, this->evict_policy, this->write_through, this->write_alloc)));
-        // access memory
-        int mem_accesses = sets->at(index)->add_block(tag);
-	    // update cycle stat
-        stats->cycles += this->block_size*25*mem_accesses;
     }
+    // access memory
+    int mem_accesses = sets->at(index)->add_block(tag);
+    // update cycle stat
+    stats->cycles += this->block_size*25*mem_accesses;
 }
 
 /**
@@ -133,9 +128,10 @@ void Cache::write_cache(uint32_t tag, uint32_t index) {
         // update stats
         stats->store_hits++;
         stats->cycles++;
-    if (evict_policy == 1) {
-        sets->at(index)->update_evict_order(tag);
-    }
+        if (evict_policy == 1) {
+            sets->at(index)->update_evict_order(tag);
+        }
+
     } else {
         // update misses stat
         stats->store_misses++;
@@ -146,7 +142,7 @@ void Cache::write_cache(uint32_t tag, uint32_t index) {
     }
     //if write through update cycles
     if (this->write_through) {
-        stats->cycles += 25*block_size;
+        stats->cycles += block_size*25;
     } else {
         if(this->is_hit(tag, index)) {
             // otherwise set appropriate block to dirty

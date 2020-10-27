@@ -139,6 +139,7 @@ int main(int argc, char *argv[]) {
     } else if (op_type.compare("s") == 0) {
       cache->write_cache(tag_index->first, tag_index->second);
     }
+    op_type = "a";
   }
   
   cout << cache->get_stats()->to_string();
