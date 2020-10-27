@@ -8,7 +8,7 @@
  *  Input:  number of sets, size of sets, block size, and string versions of the write 
  *  and string versions of write allocate, write throguh and eviction policies
  */
-Cache::Cache(int num_sets, int set_size, int block_size, string write_alloc, string write_through, string evict_policy) {
+Cache::Cache(uint32_t num_sets, uint32_t set_size, uint32_t block_size, string write_alloc, string write_through, string evict_policy) {
     // Makes new set of stats set to 0
     this->stats = new Statistics;
 
@@ -16,6 +16,7 @@ Cache::Cache(int num_sets, int set_size, int block_size, string write_alloc, str
     this->num_sets = num_sets;
     this->set_size = set_size;
     this->block_size = block_size;
+    this->sets = new map<uint32_t, Set*>;
 
     // For policies passed as strings, check which
     // of 2 possibilities (already checked) is passed
@@ -30,7 +31,7 @@ Cache::Cache(int num_sets, int set_size, int block_size, string write_alloc, str
     } else {
         this->write_through = false;
     }
-    if (evict_policy.compare("lru")) {
+    if (evict_policy.compare("lru") == 0) {
         this->evict_policy = 1;
     } else {
         this->evict_policy = 0;
@@ -42,16 +43,16 @@ Cache::Cache(int num_sets, int set_size, int block_size, string write_alloc, str
  *  Input: address, an int representing the address in question
  *  Output: a pointer to a tag and index value value, reping the address
  */
-pair<int, int>* Cache::process_address(int address) {
+pair<uint32_t, uint32_t>* Cache::process_address(uint32_t address) {
     // remove offset
-    int addr_no_offset = address >> (int) log2(block_size);
+    uint32_t addr_no_offset = address >> (int) log2(block_size);
     // get tag
-    int tag = addr_no_offset >> (int) log2(num_sets);
+    uint32_t tag = addr_no_offset >> (int) log2(num_sets);
     // get index
-    int index = addr_no_offset - tag;
+    uint32_t index = addr_no_offset - tag;
 
     // return tag, index pair
-    return new pair<int, int>(tag, index);
+    return new pair<uint32_t, uint32_t>(tag, index);
 }
 
 /**
@@ -59,7 +60,7 @@ pair<int, int>* Cache::process_address(int address) {
  *  Input: tag and index ints representing an address
  *  Output: boolean value of if there was a hit
  */
-bool Cache::is_hit(int tag, int index) {
+bool Cache::is_hit(uint32_t tag, uint32_t index) {
     // check if index is in set
     if (sets->find(index) != sets->end()) {
         // return if tag in index
@@ -75,7 +76,7 @@ bool Cache::is_hit(int tag, int index) {
  *  Input: tag and index ints representing an address
  *  Output: boolean of if cache was read
  */
-bool Cache::read_cache(int tag, int index) {
+void Cache::read_cache(uint32_t tag, uint32_t index) {
     // count loads
     stats->total_loads++;
     // if there's a hit
@@ -89,7 +90,6 @@ bool Cache::read_cache(int tag, int index) {
         stats->cycles++;
 
 	// return true read because hit
-        return true;
     } else {
         // count misses
         stats->load_misses++;
@@ -103,12 +103,18 @@ bool Cache::read_cache(int tag, int index) {
  *  Input: tag and index ints representing an address
  *  Output: N/A doesn't return whether read or not
  */
-void Cache::load_cache(int tag, int index) {
+void Cache::load_cache(uint32_t tag, uint32_t index) {
     // check address not already in cache
     if (sets->find(index) != sets->end()) {
         // access memory
         int mem_accesses = sets->at(index)->add_block(tag);
 	// update cycle stat
+        stats->cycles += this->block_size*25*mem_accesses;
+    } else {
+        sets->insert(pair<uint32_t, Set*>(index, new Set(this->set_size, this->evict_policy, this->write_through, this->write_alloc)));
+        // access memory
+        int mem_accesses = sets->at(index)->add_block(tag);
+	    // update cycle stat
         stats->cycles += this->block_size*25*mem_accesses;
     }
 }
@@ -118,7 +124,7 @@ void Cache::load_cache(int tag, int index) {
  *  Input: tag and index ints representing an address
  *  Output: N/A doesn't return
  */
-void Cache::write_cache(int tag, int index) {
+void Cache::write_cache(uint32_t tag, uint32_t index) {
     // update store stats
     stats->total_stores++;
 
@@ -139,7 +145,9 @@ void Cache::write_cache(int tag, int index) {
     if (this->write_through) {
         stats->cycles += 25*block_size;
     } else {
-        // otherwise set appropriate block to dirty
-        this->sets->at(index)->get_blocks()->at(tag)->is_dirty = true;
+        if(this->is_hit(tag, index)) {
+            // otherwise set appropriate block to dirty
+            this->sets->at(index)->get_blocks()->at(tag)->is_dirty = true;
+        }
     }
 }

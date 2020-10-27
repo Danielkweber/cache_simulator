@@ -8,7 +8,7 @@ using std::pair;
  *  Takes in the set size, and policies for eviction,
  *  write through and wrtie allocate
  */
-Set::Set(int set_size, char evict_policy, bool write_through, bool write_allocate) {
+Set::Set(uint32_t set_size, int evict_policy, bool write_through, bool write_allocate) {
     // initially set num blocks to 0
     this->num_blocks = 0;
     
@@ -20,8 +20,8 @@ Set::Set(int set_size, char evict_policy, bool write_through, bool write_allocat
 
     // initialize block map and evict order to
     // empty map and list
-    this->blocks = new map<int, Block*>;
-    this->evict_order = new list<int>;
+    this->blocks = new map<uint32_t, Block*>;
+    this->evict_order = new list<uint32_t>;
 }
 
 /**
@@ -29,7 +29,7 @@ Set::Set(int set_size, char evict_policy, bool write_through, bool write_allocat
  *  Input: tag int which we check if is the given set
  *  Output: boolean value of if tag is in set or not
  */
-bool Set::is_in_set(int tag) {
+bool Set::is_in_set(uint32_t tag) {
     //checks if tag is in set
     // return true if in, false if not
     return (this->blocks->find(tag) != blocks->end());
@@ -40,13 +40,13 @@ bool Set::is_in_set(int tag) {
  *  Input: tag int which we will add to set
  *  Output: an int which is the number of additonal blocks 
  */
-int Set::add_block(int tag) {
+int Set::add_block(uint32_t tag) {
     //  if the set is full
     if (this->num_blocks > this->set_size) {
         // gets number of kickedout blocks 
         int write_back = kickout();
 	// adds new block
-	blocks->insert(pair<int, Block*>(tag, new Block));
+	blocks->insert(pair<uint32_t, Block*>(tag, new Block));
 	// update evict order
 	evict_order->push_front(tag);
 	// updates number of blocks
@@ -56,7 +56,7 @@ int Set::add_block(int tag) {
         return 1 + write_back;
     } else {
         // add new block
-        blocks->insert(pair<int, Block*>(tag, new Block));
+        blocks->insert(pair<uint32_t, Block*>(tag, new Block));
 	// update evict order
 	evict_order->push_front(tag);
 	// update num blocks
@@ -72,7 +72,7 @@ int Set::add_block(int tag) {
  *  Input: tag int of which we will update eviction order
  *  Output: N/A, updates evict_order in set
  */
-void Set::update_evict_order(int tag) {
+void Set::update_evict_order(uint32_t tag) {
     // remove tag from original place
     this->evict_order->remove(tag);
     // add back in front

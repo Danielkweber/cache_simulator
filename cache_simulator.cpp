@@ -67,7 +67,7 @@ int valid_num_args(char *argv[]) {
 int valid_instruct_args(int argc, char *argv[]) {
   //check proper number of arguments
   if (argc != 7) {
-    cout << "Invalid number of argumetns" << endl;
+    cout << "Invalid number of arguments" << endl;
     return 1;
   }
 
@@ -78,16 +78,14 @@ int valid_instruct_args(int argc, char *argv[]) {
   }
 
   //checks that 5th argument is one of valid options
-  if (strcmp(argv[5], "write-through") != 0 && strcmp(argv[5], "write-back")\
- != 0) {
+  if (strcmp(argv[5], "write-through") != 0 && strcmp(argv[5], "write-back") != 0) {
     cout << "Invalid write through or back argument" << endl;
     return 1;
   }
 
   //checks that 6th argument is one of valid options
-  if (strcmp(argv[6], "lru") != 0 && strcmp(argv[6], "fifo")\
- != 0) {
-    cout << "Invalid eviction strategy  argument" << endl;
+  if (strcmp(argv[6], "lru") != 0 && strcmp(argv[6], "fifo") != 0) {
+    cout << "Invalid eviction strategy argument" << endl;
     return 1;
   }
 
@@ -127,14 +125,12 @@ int main(int argc, char *argv[]) {
   string op_type;
   string trace_str;
   string trash;
-  unsigned long trace;
-  pair<int, int>* tag_index;
-  cout << "hello";
+  uint32_t trace;
+  pair<uint32_t, uint32_t>* tag_index;
   while (cin) {
     cin >> op_type;
     cin >> trace_str;
-    cout << op_type;
-    cout << trace_str;
+    cin >> trash;
     trace_str = trace_str.substr(2);
     trace = stoul(trace_str, 0, 16);
     tag_index = cache->process_address(trace);
