@@ -133,6 +133,9 @@ void Cache::write_cache(uint32_t tag, uint32_t index) {
         // update stats
         stats->store_hits++;
         stats->cycles++;
+    if (evict_policy == 1) {
+        sets->at(index)->update_evict_order(tag);
+    }
     } else {
         // update misses stat
         stats->store_misses++;
