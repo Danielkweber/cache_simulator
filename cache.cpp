@@ -1,5 +1,6 @@
-#include "cache.h"
 #include <math.h>
+#include <iterator>
+#include "cache.h"
 
 
 
@@ -38,12 +39,20 @@ Cache::Cache(uint32_t num_sets, uint32_t set_size, uint32_t block_size, string w
     }
 }
 
+Cache::~Cache() {
+    for (map<uint32_t, Set*>::iterator it = this->sets->begin(); it != this->sets->end(); it++) {
+        delete it->second;
+    }
+    delete this->sets;
+    delete this->stats;
+}
+
 /**
  *  Processes a cache address and returns its tag and index
  *  Input: address, an int representing the address in question
  *  Output: a pointer to a tag and index value value, reping the address
  */
-pair<uint32_t, uint32_t>* Cache::process_address(uint32_t address) {
+pair<uint32_t, uint32_t> Cache::process_address(uint32_t address) {
     // remove offset
     uint32_t addr_no_offset = address >> (int) log2(block_size);
     // get tag
@@ -52,7 +61,7 @@ pair<uint32_t, uint32_t>* Cache::process_address(uint32_t address) {
     uint32_t index = addr_no_offset - tag;
 
     // return tag, index pair
-    return new pair<uint32_t, uint32_t>(tag, index);
+    return pair<uint32_t, uint32_t>(tag, index);
 }
 
 /**
@@ -142,7 +151,7 @@ void Cache::write_cache(uint32_t tag, uint32_t index) {
     }
     //if write through update cycles
     if (this->write_through) {
-        stats->cycles += block_size*25;
+        stats->cycles += 100;
     } else {
         if(this->is_hit(tag, index)) {
             // otherwise set appropriate block to dirty

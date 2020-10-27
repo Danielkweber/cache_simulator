@@ -21,6 +21,7 @@ class Cache {
                 int store_misses = 0;
                 int load_hits = 0;
                 int load_misses = 0;
+                Statistics() {}
                 string to_string() {
                     stringstream statstream;
                     statstream << "Total loads: " << total_loads << endl;
@@ -57,9 +58,10 @@ class Cache {
         // Constructor
         Cache(uint32_t num_sets, uint32_t set_size, uint32_t block_size, string write_alloc, string write_through, string evict_policy);
         Cache();
+        ~Cache();
 
         // given address, create new tag index pair
-        pair<uint32_t, uint32_t>* process_address(uint32_t address);
+        pair<uint32_t, uint32_t> process_address(uint32_t address);
         // store given tag in chache
         uint32_t store_in_cache(uint32_t tag, uint32_t index);
 

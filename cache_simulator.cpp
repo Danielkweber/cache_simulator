@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
   string trace_str;
   string trash;
   uint32_t trace;
-  pair<uint32_t, uint32_t>* tag_index;
+  pair<uint32_t, uint32_t> tag_index;
   while (cin) {
     cin >> op_type;
     cin >> trace_str;
@@ -135,15 +135,15 @@ int main(int argc, char *argv[]) {
     trace = stoul(trace_str, 0, 16);
     tag_index = cache->process_address(trace);
     if (op_type.compare("l") == 0) {
-      cache->read_cache(tag_index->first, tag_index->second);
+      cache->read_cache(tag_index.first, tag_index.second);
     } else if (op_type.compare("s") == 0) {
-      cache->write_cache(tag_index->first, tag_index->second);
+      cache->write_cache(tag_index.first, tag_index.second);
     }
     op_type = "a";
   }
   
   cout << cache->get_stats()->to_string();
-
+  delete cache;
   return 0;
   
   //cout << "Hello World" << endl;

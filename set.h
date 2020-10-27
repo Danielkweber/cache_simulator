@@ -28,6 +28,7 @@ class Set {
         // Contractor
         Set(uint32_t set_size, int evict_policy, bool write_through, bool write_allocate);
 
+        ~Set();
         // Checks if a tag is in a set
         bool is_in_set(uint32_t tag);
         // adds a tag to block

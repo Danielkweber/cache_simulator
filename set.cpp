@@ -1,5 +1,6 @@
 #include "set.h"
 #include <utility>
+#include <iterator>
 
 using std::pair;
 
@@ -24,6 +25,14 @@ Set::Set(uint32_t set_size, int evict_policy, bool write_through, bool write_all
     this->evict_order = new list<uint32_t>;
 }
 
+Set::~Set() {
+    for (map<uint32_t, Block*>::iterator it = this->blocks->begin(); it != this->blocks->end(); it++) {
+        this->blocks->erase(it->first);
+    }
+    delete this->blocks;
+    delete this->evict_order;
+}
+
 /**
  *  Checks if tag is in set
  *  Input: tag int which we check if is the given set
@@ -42,7 +51,7 @@ bool Set::is_in_set(uint32_t tag) {
  */
 int Set::add_block(uint32_t tag) {
     //  if the set is full
-    if (this->num_blocks > this->set_size) {
+    if (this->num_blocks >= this->set_size) {
         // gets number of kickedout blocks 
         int write_back = kickout();
 	// adds new block
