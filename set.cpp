@@ -25,10 +25,18 @@ Set::Set(uint32_t set_size, int evict_policy, bool write_through, bool write_all
     this->evict_order = new list<uint32_t>;
 }
 
+/**
+ *  Full Set Destructor
+ *  Eraces and deletes elements in Set
+ */
 Set::~Set() {
+    // iterate over blocks in set
     for (map<uint32_t, Block*>::iterator it = this->blocks->begin(); it != this->blocks->end(); it++) {
+        // erase block
         this->blocks->erase(it->first);
     }
+    
+    // delete blocks object, and evict_order
     delete this->blocks;
     delete this->evict_order;
 }

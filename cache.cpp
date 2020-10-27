@@ -39,10 +39,18 @@ Cache::Cache(uint32_t num_sets, uint32_t set_size, uint32_t block_size, string w
     }
 }
 
+/**
+ *  Full Cache Detructor
+ *  Deletes elements in chace object
+ */
 Cache::~Cache() {
+    // iterate over elements in set
     for (map<uint32_t, Set*>::iterator it = this->sets->begin(); it != this->sets->end(); it++) {
+        // deletes tag
         delete it->second;
     }
+    
+    //deletes sets and stats
     delete this->sets;
     delete this->stats;
 }
@@ -117,6 +125,7 @@ void Cache::load_cache(uint32_t tag, uint32_t index) {
     if (sets->find(index) == sets->end()) {
         sets->insert(pair<uint32_t, Set*>(index, new Set(this->set_size, this->evict_policy, this->write_through, this->write_alloc)));
     }
+    
     // access memory
     int mem_accesses = sets->at(index)->add_block(tag);
     // update cycle stat

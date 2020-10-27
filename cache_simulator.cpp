@@ -120,29 +120,54 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-
+  //Now we start processing the trace
+  
+  // Create cache with given parameters
   Cache* cache = new Cache(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), argv[4], argv[5], argv[6]);
+
+  // values to hold the operation type, trace string,
+  // and unnecessary final element
   string op_type;
   string trace_str;
   string trash;
   uint32_t trace;
+  // tag index pair
   pair<uint32_t, uint32_t> tag_index;
+
+  //iterate over lines in trace 
   while (cin) {
+    // get the operation type
     cin >> op_type;
+    // get the trace string
     cin >> trace_str;
+    // extra input we don't need
     cin >> trash;
+
+    //get trace string by removing the 0x 
     trace_str = trace_str.substr(2);
+    // get int version of trace string
     trace = stoul(trace_str, 0, 16);
+    // get index of where address is placed
     tag_index = cache->process_address(trace);
+
+    // if load
     if (op_type.compare("l") == 0) {
+      // call read function with tag and index
       cache->read_cache(tag_index.first, tag_index.second);
-    } else if (op_type.compare("s") == 0) {
+    }
+    // if store, call write function with tag and index
+    else if (op_type.compare("s") == 0) {
       cache->write_cache(tag_index.first, tag_index.second);
     }
+    //make sure if loop isn't entered on last run
     op_type = "a";
   }
-  
+
+  // print stats
   cout << cache->get_stats()->to_string();
+
+  //clear memory
   delete cache;
+  //indicate no errors
   return 0;
 }

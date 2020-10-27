@@ -9,6 +9,7 @@ class Block {
 
         // Contructor, can't be dirty when first added
         Block() { this->is_dirty = false; }
+        // Destructor
         ~Block() {}
 
 };

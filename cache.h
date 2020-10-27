@@ -21,8 +21,11 @@ class Cache {
                 int store_misses = 0;
                 int load_hits = 0;
                 int load_misses = 0;
-                Statistics() {}
-                string to_string() {
+
+	        // Constructor
+	        Statistics() {}
+	        //Prints the stats in output format in assignment
+	        string to_string() {
                     stringstream statstream;
                     statstream << "Total loads: " << total_loads << endl;
                     statstream << "Total stores: " << total_stores << endl;
@@ -58,7 +61,9 @@ class Cache {
         // Constructor
         Cache(uint32_t num_sets, uint32_t set_size, uint32_t block_size, string write_alloc, string write_through, string evict_policy);
         Cache();
-        ~Cache();
+
+        // Desctrutor
+        ~Cache();   
 
         // given address, create new tag index pair
         pair<uint32_t, uint32_t> process_address(uint32_t address);
@@ -71,6 +76,8 @@ class Cache {
         void load_cache(uint32_t tag, uint32_t index);
         // write cache for given tag and count stats
         void write_cache(uint32_t tag, uint32_t index);
+
+        // get's stats object so we can print the stats
         Statistics* get_stats() { return this->stats; }
 
 };
