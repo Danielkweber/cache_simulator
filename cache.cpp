@@ -58,7 +58,7 @@ pair<uint32_t, uint32_t> Cache::process_address(uint32_t address) {
     // get tag
     uint32_t tag = addr_no_offset >> (int) log2(num_sets);
     // get index
-    uint32_t index = addr_no_offset - tag;
+    uint32_t index = addr_no_offset - (tag << (int) log2(num_sets));
 
     // return tag, index pair
     return pair<uint32_t, uint32_t>(tag, index);

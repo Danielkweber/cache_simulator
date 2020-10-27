@@ -145,6 +145,4 @@ int main(int argc, char *argv[]) {
   cout << cache->get_stats()->to_string();
   delete cache;
   return 0;
-  
-  //cout << "Hello World" << endl;
 }
