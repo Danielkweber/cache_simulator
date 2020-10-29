@@ -9,16 +9,12 @@ The most common set, block and block size combination on the piazza forums was:
 set number = 256, block/set = 4, block size = 16 bytes
 So to find the best cache configuration, we're going to try different boolean parameters for these
 constant numerical parameters. 
-We're going to use gcc.trace as our test file, because that was also the most common one used on
-Piazza, but also because it's the largest file, so we'll get the best data out of it. 
+We're going to use gcc.trace as our test file because it's a large file from a real program, so we'll get some good data out of it. 
 We have 6 configurations of cache to run and check. There are 3 boolean options which gives us
 2^3 options, except we don't run the no-write-allocate write-back pair for either lru or fifo, so
 2^ - 2 = 6 configuration.
-Our goal is to find the best overall effectiveness, how will we determine this? Well misses is 
-a good way to check, the more misses the worst, because this will lead to more cycles (100 each)
-being needed and more time being needed to complete the query. 
-We also want to see higher hit rates, which means items are found in our cache more often. 
-Total chache size is another good metric for measuring cache performance.
+Our goal is to find the best overall effectiveness, how will we determine this? We'll use cycles as it is a good metric that captures
+the overall performance of the cache. We also want to see higher hit rates, which means items are found in our cache more often. 
 
 ./csim 256 4 16 write-allocate write-back fifo < gcc.trace
 Total loads: 318197
@@ -85,7 +81,7 @@ We suspect that LRU will perform better than FIFO because
 it's more efficient for practical use. We can see this when comparing miss counts between LRU and FIFO.
 We can see for WA WB lru and 3399 and 9236 load and store misses, while fifo had 4026 and 9439 misses. 
 LRU had fewer misses, and fewer cycles. We can see this is true for the other WA/NWA and WT/WB pairs.
-So we know LRU leads to fewer misses. 
+So we know LRU leads to fewer misses. However, we also see that the difference is not that large.
 
 We can see that regardless of WT/WB, when write-allocate is used with the same eviction policy, hit and 
 miss rates are the same. Both WA LRU cases (the WB and the WT calls) returned:
@@ -99,7 +95,8 @@ Load misses: 4026
 Store hits: 188047
 Store misses: 9439
 In both cases, cycles were much higher with WB, which is no surprise. In both cases, WB had ~9M cycles
-while WT had ~25M. So we know write-back leads to fewer cycles. 
+while WT had ~25M. So we know write-back leads to significantly fewer cycles (by a factor of 3 or more
+in most cases). 
 
 We can also see that no-write-allocate leads to about twice as many misses as write-allocate in all cases.
 So we know that write-allocate leads to fewer misses.
@@ -108,49 +105,59 @@ So if we're trying to build a cache with the least cycles and least misses, writ
 is the way to go. 
 
 Based on this, we wrote a python script to iterate over different size powers of two for our numerical
-paramters and ran our simulation on them using write-allocate write-back lru. We had our script keep track 
-of hits and cycles to report the configurations with the least cycles and most hits. 
-We found that smaller block sizes are much better than large ones, we found 8 to be the optimal block size 
+paramaters and ran our simulation on them using write-allocate write-back lru. We had our script keep track 
+of hits and cycles to report the configurations with the least cycles and most hits. We capped the highest
+possible size of our cache at 16KB given the cost constraints of large quantities of cache. Further, we 
+optimized for smaller set sizes based on the discussion in lecture about the difficulty of creating a fully
+associative cache in hardware.
+We found that smaller block sizes are much better than large ones, we found 4 to be the optimal block size 
 in our simulations.
 Our best result was:
-./csim 256 8 8 write-allocate write-back lru < gcc.trace
+./csim 512 8 4 write-allocate write-back lru < gcc.trace
 Total loads: 318197
 Total stores: 197486
-Load hits: 313484
-Load misses: 4713
-Store hits: 179709
-Store misses: 17777
-Total cycles: 8471193
+Load hits: 312710
+Load misses: 5487
+Store hits: 169719
+Store misses: 27767
+Total cycles: 6396029
 
-A close second was:
-./csim 512 4 8 write-allocate write-back lru < gcc.trace
+./csim 512 8 4 write-allocate write-back lru < swim.trace
+Total loads: 220668
+Total stores: 82525
+Load hits: 218921
+Load misses: 1747
+Store hits: 61597
+Store misses: 20928
+Total cycles: 4457818
+
+
+
+
+Given the versatility of a fully associative caches, we decided to test a fully associative cache of block
+size 4. This lead to only 8444084, which was our best yet. 
+./csim 1 4096 4 write-allocate write-back lru < gcc.trace
 Total loads: 318197
 Total stores: 197486
-Load hits: 313390
-Load misses: 4807
-Store hits: 179658
-Store misses: 17828
-Total cycles: 8511848
+Load hits: 312902
+Load misses: 5295
+Store hits: 169919
+Store misses: 27567
+Total cycles: 6331921
 
-Here we can see 256 8 8 
-
-
-
-Given the versatility of a fully associative caches, we decideed to test a fully associative cache of block
-size 8. This lead to only 8444084, which was our best yet. 
-./csim 1 2048 8 write-allocate write-back lru < gcc.trace
-Total loads: 318197
-Total stores: 197486
-Load hits: 313533
-Load misses: 4664
-Store hits: 179751
-Store misses: 17735
-Total cycles: 8444084
+./csim 1 4096 4 write-allocate write-back lru < swim.trace
+Total loads: 220668
+Total stores: 82525
+Load hits: 218945
+Load misses: 1723
+Store hits: 61641
+Store misses: 20884
+Total cycles: 4293686
 
 But we know fully associative is infeasible to implement in hardware, so we've decided to choose the more 
-feasible 256 8 8, set associative cache. 
+feasible 512 8 4, set associative cache. 
 
-So our idea cache configuration is 256 8 8 write-allocate write-back lru
+So our idea cache configuration is 512 8 4 write-allocate write-back lru
 
 Contributions:
 We did most of the project together over zoom. Over 7 meetings and more than 10h on zoom we designed 

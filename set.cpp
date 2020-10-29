@@ -36,7 +36,7 @@ Set::~Set() {
     // iterate over blocks in set
     for (map<uint32_t, Block*>::iterator it = this->blocks->begin(); it != this->blocks->end(); it++) {
         // erase block
-        this->blocks->erase(it->first);
+        delete it->second;
     }
     
     // delete blocks object, and evict_order
@@ -120,6 +120,7 @@ int Set::kickout() {
         }
     }
     // kick block to be evicted
+    delete blocks->at(to_kick);
     blocks->erase(to_kick);
     // update evict order
     evict_order->pop_back();

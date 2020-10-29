@@ -20,7 +20,7 @@ set.o: set.cpp set.h block.h
 .PHONY: solution.zip
 solution.zip:
 	rm -f solution.zip
-	zip -9r $@ Makefile *.h *.cpp
+	zip -9r $@ Makefile *.h *.cpp README
 
 clean:
 	rm csim cache_simulator.o block.h.* set.h.* cache.o cache.h.* set.o
