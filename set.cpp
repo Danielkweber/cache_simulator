@@ -1,3 +1,6 @@
+//Daniel Weber JHED:dweber11
+//Vance Wood JHED: vwood3
+
 #include "set.h"
 #include <utility>
 #include <iterator>

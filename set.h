@@ -1,3 +1,9 @@
+//Daniel Weber JHED:dweber11
+//Vance Wood JHED: vwood3
+
+#ifndef SET_H
+#define SET_H
+
 #include <map>
 #include <list>
 #include "block.h"
@@ -42,3 +48,4 @@ class Set {
         // returns pointer to blocks map
         map<uint32_t, Block*>* get_blocks() { return blocks; }
 };
+#endif

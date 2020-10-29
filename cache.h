@@ -1,3 +1,8 @@
+//Daniel Weber JHED:dweber11
+//Vance Wood JHED: vwood3
+#ifndef CACHE_H
+#define CACHE_H
+
 #include <map>
 #include <utility>
 #include <string>
@@ -81,3 +86,4 @@ class Cache {
         Statistics* get_stats() { return this->stats; }
 
 };
+#endif

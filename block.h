@@ -1,3 +1,8 @@
+//Daniel Weber JHED:dweber11
+//Vance Wood JHED: vwood3
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include <map>
 
 using std::map;
@@ -13,3 +18,4 @@ class Block {
         ~Block() {}
 
 };
+#endif

@@ -1,3 +1,6 @@
+//Daniel Weber JHED:dweber11
+//Vance Wood JHED: vwood3
+
 #include <iostream>
 #include <math.h>
 #include <cstring>
@@ -6,6 +9,7 @@
 #include "cache.h"
 
 using std::cin; using std::cout;
+using std::cerr;
 using std::endl; using std::stringstream;
 using std::stoul; using std::getline;
 
@@ -42,17 +46,17 @@ int is_pos_pow2(int param) {
 int valid_num_args(char *argv[]) {
   //checks for number input
   if(atoi(argv[1]) == 0 || !is_pos_pow2(atoi(argv[1]))) {
-    cout << "Invalid set size argument" << endl;
+    cerr << "Invalid set size argument" << endl;
     return 1;
   }
   //checks if input of correct format
   if(atoi(argv[2]) == 0 || !is_pos_pow2(atoi(argv[2]))) {
-    cout << "Invalid block size argument" << endl;
+    cerr << "Invalid block size argument" << endl;
     return 1;
   }
   //checks for number input and for byte of size at least 4
   if(atoi(argv[3]) == 0 || atoi(argv[3]) < 4 || !is_pos_pow2(atoi(argv[3]))) {
-    cout << "Invalid byte argument" << endl;
+    cerr << "Invalid byte argument" << endl;
     return 1;
   }
   return 0;
@@ -64,35 +68,29 @@ int valid_num_args(char *argv[]) {
  *  Input: argc, argv, number of and command line params
  *  Output: 0 if valid, 1 if invalid
  */
-int valid_instruct_args(int argc, char *argv[]) {
-  //check proper number of arguments
-  if (argc != 7) {
-    cout << "Invalid number of arguments" << endl;
-    return 1;
-  }
-
+int valid_instruct_args(char *argv[]) {
   //checks that 4th argument is one of valid options
   if (strcmp(argv[4], "no-write-allocate") != 0 && strcmp(argv[4], "write-allocate") != 0) {
-    cout << "Invalid write allocation argument" << endl;
+    cerr << "Invalid write allocation argument" << endl;
     return 1;
   }
 
   //checks that 5th argument is one of valid options
   if (strcmp(argv[5], "write-through") != 0 && strcmp(argv[5], "write-back") != 0) {
-    cout << "Invalid write through or back argument" << endl;
+    cerr << "Invalid write through or back argument" << endl;
     return 1;
   }
 
   //checks that 6th argument is one of valid options
   if (strcmp(argv[6], "lru") != 0 && strcmp(argv[6], "fifo") != 0) {
-    cout << "Invalid eviction strategy argument" << endl;
+    cerr << "Invalid eviction strategy argument" << endl;
     return 1;
   }
 
   //checks if no-write-allocate and write-back are combined
   //which wouldn't make sense
   if (strcmp(argv[4], "no-write-allocate") == 0 && strcmp(argv[5], "write-back") == 0) {
-    cout << "Error: no-write-allocate and write-back passed together which is invalid" << endl;
+    cerr << "Error: no-write-allocate and write-back passed together which is invalid" << endl;
     return 1;
   }
 
@@ -109,6 +107,11 @@ int valid_instruct_args(int argc, char *argv[]) {
  *  output: return 0 if all goes well
  */
 int main(int argc, char *argv[]) {
+  //check proper number of arguments
+  if (argc != 7) {
+    cerr << "Invalid number of arguments" << endl;
+    return 1;
+  }
 
   //first check if input nums are valid
   if (valid_num_args(argv) != 0) {
@@ -116,7 +119,7 @@ int main(int argc, char *argv[]) {
   }
 
   //check if other argumnets are valid
-  if (valid_instruct_args(argc, argv) != 0) {
+  if (valid_instruct_args(argv) != 0) {
     return 1;
   }
 
